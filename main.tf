@@ -10,7 +10,7 @@ locals {
   iam_policy_enabled                          = local.iam_role_enabled && local.argocd["create_default_iam_policy"]
   iam_policy_document                         = local.iam_policy_enabled ? one(data.aws_iam_policy_document.default[*].json) : local.argocd["iam_policy_document"]
 
-  argocd = defaults(var.argocd,
+  argocd = defaults(var.config,
     {
       name                       = "argocd"
       namespace                  = "argo"
@@ -27,7 +27,7 @@ locals {
       create_default_iam_policy  = true
       create_default_iam_role    = true
       iam_policy_document        = ""
-      use_sts_regional_endpoints = true
+      use_sts_regional_endpoints = false
     }
   )
 

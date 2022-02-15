@@ -7,11 +7,13 @@ output:
     ## Usage
 
     ```hcl
-    module "your_aweasome_resource" {
-      source    = ""
-      namespace = "sweetops"
-      stage     = "production"
-      name      = "aweasome"
+    module "argocd" {
+      source = "./"
+
+      eks_cluster_id = var.eks_cluster_id
+
+      name      = "argocd"
+      namespace = "rlw"
     }
     ```
 

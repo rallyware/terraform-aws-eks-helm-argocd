@@ -3,7 +3,7 @@ variable "eks_cluster_id" {
   description = "EKS cluster ID"
 }
 
-variable "argocd" {
+variable "config" {
   type = object({
     name                       = optional(string)
     namespace                  = optional(string)
@@ -39,7 +39,7 @@ variable "argocd" {
     create_default_iam_policy  = true
     create_default_iam_role    = true
     iam_policy_document        = ""
-    use_sts_regional_endpoints = true
+    use_sts_regional_endpoints = false
   }
 
   description = <<-DOC

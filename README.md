@@ -33,8 +33,8 @@ module "argocd" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_application_controller_eks_iam_role"></a> [application\_controller\_eks\_iam\_role](#module\_application\_controller\_eks\_iam\_role) | rallyware/eks-iam-role/aws | 0.1.1 |
-| <a name="module_server_eks_iam_role"></a> [server\_eks\_iam\_role](#module\_server\_eks\_iam\_role) | rallyware/eks-iam-role/aws | 0.1.1 |
+| <a name="module_application_controller_eks_iam_role"></a> [application\_controller\_eks\_iam\_role](#module\_application\_controller\_eks\_iam\_role) | rallyware/eks-iam-role/aws | 0.1.2 |
+| <a name="module_server_eks_iam_role"></a> [server\_eks\_iam\_role](#module\_server\_eks\_iam\_role) | rallyware/eks-iam-role/aws | 0.1.2 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Resources

@@ -2,7 +2,6 @@ locals {
   enabled                                     = module.this.enabled
   region                                      = one(data.aws_region.default[*].name)
   account_id                                  = one(data.aws_caller_identity.default[*].account_id)
-  eks_cluster_id                              = one(data.aws_eks_cluster.default[*].id)
   eks_cluster_oidc_issuer_url                 = one(data.aws_eks_cluster.default[*].identity[0].oidc[0].issuer)
   application_controller_service_account_name = format("%s-application-controller", var.config["name"])
   server_service_account_name                 = format("%s-server", var.config["name"])

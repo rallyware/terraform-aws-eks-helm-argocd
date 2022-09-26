@@ -1,6 +1,5 @@
 locals {
   enabled                                     = module.this.enabled
-  region                                      = one(data.aws_region.default[*].name)
   account_id                                  = one(data.aws_caller_identity.default[*].account_id)
   eks_cluster_oidc_issuer_url                 = one(data.aws_eks_cluster.default[*].identity[0].oidc[0].issuer)
   application_controller_service_account_name = format("%s-application-controller", var.config["name"])
@@ -20,10 +19,6 @@ locals {
       server_role_arn        = module.server_eks_iam_role.service_account_role_arn
     }
   )
-}
-
-data "aws_region" "default" {
-  count = local.enabled ? 1 : 0
 }
 
 data "aws_caller_identity" "default" {

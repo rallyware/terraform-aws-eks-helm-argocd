@@ -1,40 +1,17 @@
 locals {
   enabled                                     = module.this.enabled
-  region                                      = one(data.aws_region.default[*].name)
   account_id                                  = one(data.aws_caller_identity.default[*].account_id)
-  eks_cluster_id                              = one(data.aws_eks_cluster.default[*].id)
   eks_cluster_oidc_issuer_url                 = one(data.aws_eks_cluster.default[*].identity[0].oidc[0].issuer)
-  application_controller_service_account_name = format("%s-application-controller", local.argocd["name"])
-  server_service_account_name                 = format("%s-server", local.argocd["name"])
-  iam_role_enabled                            = local.enabled && local.argocd["create_default_iam_role"]
-  iam_policy_enabled                          = local.iam_role_enabled && local.argocd["create_default_iam_policy"]
-  iam_policy_document                         = local.iam_policy_enabled ? one(data.aws_iam_policy_document.default[*].json) : local.argocd["iam_policy_document"]
-
-  argocd = defaults(var.config,
-    {
-      name                       = "argocd"
-      namespace                  = "argo"
-      repository                 = "https://argoproj.github.io/argo-helm"
-      chart                      = "argo-cd"
-      version                    = "3.33.3"
-      max_history                = 10
-      create_namespace           = true
-      dependency_update          = true
-      reuse_values               = false
-      timeout                    = 300
-      override_values            = ""
-      wait                       = true
-      create_default_iam_policy  = true
-      create_default_iam_role    = true
-      iam_policy_document        = ""
-      use_sts_regional_endpoints = false
-    }
-  )
+  application_controller_service_account_name = format("%s-application-controller", var.config["name"])
+  server_service_account_name                 = format("%s-server", var.config["name"])
+  iam_role_enabled                            = local.enabled && var.config["create_default_iam_role"]
+  iam_policy_enabled                          = local.iam_role_enabled && var.config["create_default_iam_policy"]
+  iam_policy_document                         = local.iam_policy_enabled ? one(data.aws_iam_policy_document.default[*].json) : var.config["iam_policy_document"]
 
   argocd_helm_values = templatefile("${path.module}/helm-values/argocd.yaml",
     {
-      fullname_override      = local.argocd["name"]
-      sts_regional_endpoints = local.argocd["use_sts_regional_endpoints"]
+      fullname_override      = var.config["name"]
+      sts_regional_endpoints = var.config["use_sts_regional_endpoints"]
       role_enabled           = local.iam_role_enabled
       controller_sa_name     = local.application_controller_service_account_name
       controller_role_arn    = module.application_controller_eks_iam_role.service_account_role_arn
@@ -42,10 +19,6 @@ locals {
       server_role_arn        = module.server_eks_iam_role.service_account_role_arn
     }
   )
-}
-
-data "aws_region" "default" {
-  count = local.enabled ? 1 : 0
 }
 
 data "aws_caller_identity" "default" {
@@ -63,7 +36,7 @@ data "utils_deep_merge_yaml" "default" {
 
   input = [
     local.argocd_helm_values,
-    local.argocd["override_values"]
+    var.config["override_values"]
   ]
 }
 
@@ -88,7 +61,7 @@ module "server_eks_iam_role" {
   aws_iam_policy_document     = local.iam_policy_document
   eks_cluster_oidc_issuer_url = local.eks_cluster_oidc_issuer_url
   service_account_name        = local.server_service_account_name
-  service_account_namespace   = local.argocd["namespace"]
+  service_account_namespace   = var.config["namespace"]
 
   enabled = local.iam_role_enabled
   context = module.this.context
@@ -101,7 +74,7 @@ module "application_controller_eks_iam_role" {
   aws_iam_policy_document     = local.iam_policy_document
   eks_cluster_oidc_issuer_url = local.eks_cluster_oidc_issuer_url
   service_account_name        = local.application_controller_service_account_name
-  service_account_namespace   = local.argocd["namespace"]
+  service_account_namespace   = var.config["namespace"]
 
   enabled = local.iam_role_enabled
   context = module.this.context
@@ -110,16 +83,16 @@ module "application_controller_eks_iam_role" {
 resource "helm_release" "default" {
   count = local.enabled ? 1 : 0
 
-  name              = local.argocd["name"]
-  repository        = local.argocd["repository"]
-  chart             = local.argocd["chart"]
-  version           = local.argocd["version"]
-  namespace         = local.argocd["namespace"]
-  max_history       = local.argocd["max_history"]
-  create_namespace  = local.argocd["create_namespace"]
-  dependency_update = local.argocd["dependency_update"]
-  reuse_values      = local.argocd["reuse_values"]
-  wait              = local.argocd["wait"]
-  timeout           = local.argocd["timeout"]
+  name              = var.config["name"]
+  repository        = var.config["repository"]
+  chart             = var.config["chart"]
+  version           = var.config["version"]
+  namespace         = var.config["namespace"]
+  max_history       = var.config["max_history"]
+  create_namespace  = var.config["create_namespace"]
+  dependency_update = var.config["dependency_update"]
+  reuse_values      = var.config["reuse_values"]
+  wait              = var.config["wait"]
+  timeout           = var.config["timeout"]
   values            = [one(data.utils_deep_merge_yaml.default[*].output)]
 }

@@ -3,6 +3,7 @@ locals {
   account_id                                  = one(data.aws_caller_identity.default[*].account_id)
   eks_cluster_oidc_issuer_url                 = one(data.aws_eks_cluster.default[*].identity[0].oidc[0].issuer)
   application_controller_service_account_name = format("%s-application-controller", var.config["name"])
+  server_service_account_name                 = format("%s-server", var.config["name"])
   iam_role_enabled                            = local.enabled && var.config["create_default_iam_role"]
   iam_policy_enabled                          = local.iam_role_enabled && var.config["create_default_iam_policy"]
   iam_policy_document                         = local.iam_policy_enabled ? one(data.aws_iam_policy_document.default[*].json) : var.config["iam_policy_document"]
@@ -13,7 +14,8 @@ locals {
       sts_regional_endpoints = var.config["use_sts_regional_endpoints"]
       role_enabled           = local.iam_role_enabled
       controller_sa_name     = local.application_controller_service_account_name
-      controller_role_arn    = module.application_controller_eks_iam_role.service_account_role_arn
+      server_sa_name         = local.server_service_account_name
+      role_arn               = module.application_controller_eks_iam_role.service_account_role_arn
     }
   )
 }
@@ -59,6 +61,7 @@ module "application_controller_eks_iam_role" {
   eks_cluster_oidc_issuer_url = local.eks_cluster_oidc_issuer_url
   service_account_name        = local.application_controller_service_account_name
   service_account_namespace   = var.config["namespace"]
+  additional_service_accounts = [local.server_service_account_name]
 
   enabled = local.iam_role_enabled
   context = module.this.context

@@ -28,7 +28,7 @@ variable "config" {
     namespace                  = "argo"
     repository                 = "https://argoproj.github.io/argo-helm"
     chart                      = "argo-cd"
-    version                    = "5.23.0"
+    version                    = "5.46.7"
     max_history                = 10
     create_namespace           = true
     dependency_update          = true

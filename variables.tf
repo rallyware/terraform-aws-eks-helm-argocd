@@ -9,7 +9,7 @@ variable "config" {
     namespace                  = optional(string, "argo")
     repository                 = optional(string, "https://argoproj.github.io/argo-helm")
     chart                      = optional(string, "argo-cd")
-    version                    = optional(string, "3.33.3")
+    version                    = optional(string, "5.46.7")
     override_values            = optional(string)
     max_history                = optional(number, 10)
     create_namespace           = optional(bool, true)
@@ -28,7 +28,7 @@ variable "config" {
     namespace                  = "argo"
     repository                 = "https://argoproj.github.io/argo-helm"
     chart                      = "argo-cd"
-    version                    = "5.23.0"
+    version                    = "5.46.7"
     max_history                = 10
     create_namespace           = true
     dependency_update          = true

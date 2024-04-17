@@ -6,12 +6,22 @@ on:
 jobs:
   lint-pr:
     runs-on: ubuntu-latest
-
     steps:
       - name: Lint PR
-        uses: aslafy-z/conventional-pr-title-action@v3.2.0
+        uses: amannn/action-semantic-pull-request@v5
         with:
-          preset: conventional-changelog-angular@^5.0.6
+          types: |
+            build
+            ci
+            docs
+            feat
+            fix
+            perf
+            refactor
+            style
+            test
+            chore
+          requireScope: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -20,6 +30,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{tojson(github.event.number)}}
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Please ensure your PR conforms to conventional commits (see https://www.conventionalcommits.org).
 
@@ -35,3 +46,9 @@ jobs:
             * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
             * **test**: Adding missing tests or correcting existing tests
             * **chore**: No production code change
+
+      - name: Label PR
+        uses: fuxingloh/multi-labeler@v4.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          config-path: .github/labeler.yml

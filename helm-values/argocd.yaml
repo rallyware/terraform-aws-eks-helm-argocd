@@ -9,8 +9,8 @@ controller:
       eks.amazonaws.com/sts-regional-endpoints: "${sts_regional_endpoints}"
 %{ endif }
 
-server:
-  config:
+configs:
+  cm:
     resource.exclusions: |
       - apiGroups:
         - "velero.io"
